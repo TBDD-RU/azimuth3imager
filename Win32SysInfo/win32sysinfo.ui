@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>../src/images/Win32DiskImager.ico</normaloff>../src/images/Win32DiskImager.ico</iconset>
+    <normaloff>../src/images/tbdd.ico</normaloff>../src/images/tbdd.ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QWidget" name="verticalLayoutWidget">

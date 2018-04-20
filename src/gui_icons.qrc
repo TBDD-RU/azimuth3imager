@@ -2,6 +2,6 @@
   <qresource prefix="/images" >
     <file>images/browse.png</file>
     <file>images/reload.png</file>
-    <file>images/Win32DiskImager.png</file>
+    <file>images/tbdd.png</file>
   </qresource>
 </RCC>

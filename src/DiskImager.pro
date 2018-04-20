@@ -18,7 +18,7 @@
 #                 https://sourceforge.net/projects/win32diskimager/
 ###################################################################
 TEMPLATE = app
-TARGET = ../../Win32DiskImager
+TARGET = ../../azimuth3imager
 DEPENDPATH += .
 INCLUDEPATH += .
 #CONFIG += release
@@ -47,35 +47,26 @@ SOURCES += disk.cpp\
            droppablelineedit.cpp \
            elapsedtimer.cpp
 
-RESOURCES += gui_icons.qrc translations.qrc
+RESOURCES += gui_icons.qrc #translations.qrc
 
 RC_FILE = DiskImager.rc
 
-LANGUAGES  = es\
-             it\
-             pl\
-             nl\
-             de\
-             fr\
-             zh_CN\
-             zh_TW\
-             ta_IN
+LANGUAGES  = ru
 
 defineReplace(prependAll) {
  for(a,$$1):result += $$2$${a}$$3
  return($$result)
 }
 
-TRANSLATIONS = $$prependAll(LANGUAGES, $$PWD/lang/diskimager_, .ts)
+TRANSLATIONS = #$$prependAll(LANGUAGES, $$PWD/lang/diskimager_, .ts)
 
 TRANSLATIONS_FILES =
 
-qtPrepareTool(LRELEASE, lrelease)
-for(tsfile, TRANSLATIONS) {
-    qmfile = $$tsfile
-    qmfile ~= s,.ts$,.qm,
-    command = $$LRELEASE $$tsfile -qm $$qmfile
-    system($$command)|error("Failed to run: $$command")
-    TRANSLATIONS_FILES += $$qmfile
-}
-
+#qtPrepareTool(LRELEASE, lrelease)
+#for(tsfile, TRANSLATIONS) {
+#    qmfile = $$tsfile
+#    qmfile ~= s,.ts$,.qm,
+#    command = $$LRELEASE $$tsfile -qm $$qmfile
+#    system($$command)|error("Failed to run: $$command")
+#    TRANSLATIONS_FILES += $$qmfile
+#}

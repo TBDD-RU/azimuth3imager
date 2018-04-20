@@ -37,9 +37,9 @@ int main(int argc, char *argv[])
     app.setAttribute(Qt::AA_UseDesktopOpenGL);
     app.setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    QTranslator translator;
-    translator.load("translations/diskimager_" + QLocale::system().name());
-    app.installTranslator(&translator);
+    //QTranslator translator;
+    //translator.load("translations/diskimager_" + QLocale::system().name());
+    //app.installTranslator(&translator);
 
     MainWindow* mainwindow = MainWindow::getInstance();
     mainwindow->show();
