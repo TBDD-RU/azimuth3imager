@@ -71,7 +71,7 @@ BEGIN
         BEGIN
             VALUE "Comments", "Azimuth 3 Image Writer for Windows to write USB images"
             VALUE "FileDescription", "imager"
-            VALUE "FileVersion", "1.0.0"
+            VALUE "FileVersion", "0.0.0"
             VALUE "InternalName", "win32-image-writer"
             VALUE "LegalCopyright", "Copyright (C) 2009-2017 Windows ImageWriter Team, 2018 TBDD"
             VALUE "OriginalFilename", "azimuth3imager"

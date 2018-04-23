@@ -22,6 +22,7 @@ TARGET = ../../azimuth3imager
 DEPENDPATH += .
 INCLUDEPATH += .
 #CONFIG += release
+#CONFIG += static
 DEFINES -= UNICODE
 QT += widgets
 VERSION = 1.0
