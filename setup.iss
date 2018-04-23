@@ -37,8 +37,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "build\azimuth3imager.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "build\*dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "build\platforms\*dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "build\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "build\platforms\*.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion
 Source: "Changelog.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "GPL-2"; DestDir: "{app}"; Flags: ignoreversion
 Source: "LGPL-2.1"; DestDir: "{app}"; Flags: ignoreversion
