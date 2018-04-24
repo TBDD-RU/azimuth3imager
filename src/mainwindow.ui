@@ -269,22 +269,6 @@
     <item>
      <layout class="QHBoxLayout">
       <item>
-       <widget class="QPushButton" name="bWrite">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>Записать образ на носитель</string>
-        </property>
-        <property name="text">
-         <string>Записать</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QPushButton" name="bCancel">
         <property name="enabled">
          <bool>false</bool>
@@ -300,6 +284,22 @@
         </property>
         <property name="text">
          <string>Отмена</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="bWrite">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="statusTip">
+         <string>Записать образ на носитель</string>
+        </property>
+        <property name="text">
+         <string>Записать</string>
         </property>
        </widget>
       </item>
