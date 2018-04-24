@@ -59,8 +59,6 @@ SF: 39 - Miswrote to SSD
 SF: 40 - Disk Imager scans whole %USERPROFILE% on start
 SF: 45 - Translation files adustment
 
-
-
 =============
 Known Issues:
 =============
@@ -87,4 +85,3 @@ The license text is available in LGPL-2.1
 
 Original version developed by Justin Davis <tuxdavis@gmail.com>
 Maintained by the ImageWriter developers (http://sourceforge.net/projects/win32diskimager).
-

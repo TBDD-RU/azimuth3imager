@@ -85,3 +85,7 @@ Fixed LP:984510  "Cannot select Device"
 Fixed LP:923719  "An error occurred while accessing the device. Error1: Incorrect function"
 Fixed LP:985080  "C: with windows 7 partition erased with all data" (NOT FULLY VERIFIED)
 fixing memory leak
+
+Azimuth 3 Image Writer 0.0
+===========
+Disk Imager was redesigned for the specific needs of TBDD, LLC (info@tbdd.ru).
