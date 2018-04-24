@@ -215,7 +215,7 @@ void MainWindow::on_tbBrowse_clicked()
     {
         fileType.append(";;");
     }
-    fileType.append(tr("Disk Images (*.img *.IMG);;*.*"));
+    fileType.append(tr("Disk Images (*.a3i *.raw *.img);;*.*"));
     // create a generic FileDialog
     QFileDialog dialog(this, tr("Select a disk image"));
     dialog.setNameFilter(fileType);

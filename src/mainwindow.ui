@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>480</width>
-    <height>303</height>
+    <height>300</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -26,7 +26,7 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>Azimuth 3 Imager</string>
+   <string>Azimuth 3 Image Writer</string>
   </property>
   <property name="windowIcon">
    <iconset resource="gui_icons.qrc">
@@ -125,7 +125,7 @@
     <item>
      <widget class="QGroupBox" name="hashGroup">
       <property name="title">
-       <string>Hash</string>
+       <string>Хеш-сумма образа</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
@@ -169,7 +169,7 @@
             <string notr="true">padding: 0em .5em 0em .5em;</string>
            </property>
            <property name="text">
-            <string>Generate</string>
+            <string>Посчитать</string>
            </property>
           </widget>
          </item>
@@ -188,7 +188,7 @@
             <string notr="true">padding: 0em .5em 0em .5em;</string>
            </property>
            <property name="text">
-            <string>Copy</string>
+            <string>Копировать</string>
            </property>
           </widget>
          </item>
@@ -230,39 +230,6 @@
      </widget>
     </item>
     <item>
-     <layout class="QHBoxLayout">
-      <property name="leftMargin">
-       <number>5</number>
-      </property>
-      <item>
-       <widget class="QCheckBox" name="partitionCheckBox">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Read Only Allocated Partitions</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_4">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </item>
-    <item>
      <widget class="QGroupBox" name="groupBox_5">
       <property name="title">
        <string>Прогресс</string>
@@ -302,44 +269,6 @@
     <item>
      <layout class="QHBoxLayout">
       <item>
-       <widget class="QPushButton" name="bCancel">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="statusTip">
-         <string>Отменииь текущий процесс записи</string>
-        </property>
-        <property name="text">
-         <string>Отмена</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="bRead">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="statusTip">
-         <string>Read data from 'Device' to 'Image File'</string>
-        </property>
-        <property name="text">
-         <string>Read</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QPushButton" name="bWrite">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -356,12 +285,21 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="bVerify">
-        <property name="toolTip">
-         <string>Verify the image file with the selected drive</string>
+       <widget class="QPushButton" name="bCancel">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="statusTip">
+         <string>Отменииь текущий процесс записи</string>
         </property>
         <property name="text">
-         <string>Verify Only</string>
+         <string>Отмена</string>
         </property>
        </widget>
       </item>

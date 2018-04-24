@@ -73,9 +73,9 @@ BEGIN
             VALUE "FileDescription", "imager"
             VALUE "FileVersion", "0.0.0"
             VALUE "InternalName", "win32-image-writer"
-            VALUE "LegalCopyright", "Copyright (C) 2009-2017 Windows ImageWriter Team, 2018 TBDD"
+            VALUE "LegalCopyright", "Copyright (C) 2018 TBDD, LLC"
             VALUE "OriginalFilename", "azimuth3imager"
-            VALUE "ProductName", "Azimuth 3 Imager"
+            VALUE "ProductName", "Azimuth 3 Image Writer"
             VALUE "ProductVersion", "0.0.0"
         END
     END

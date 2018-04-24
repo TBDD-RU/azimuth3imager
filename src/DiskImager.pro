@@ -14,9 +14,11 @@
 #
 #
 #  Copyright (C) 2009, Justin Davis <tuxdavis@gmail.com>
-#  Copyright (C) 2009-2017 ImageWriter developers
+#  Copyright (C) 2009-2018 ImageWriter developers
 #                 https://sourceforge.net/projects/win32diskimager/
+#  Copyright (C) 2018 TBDD, LLC <info@tbdd.ru>
 ###################################################################
+
 TEMPLATE = app
 TARGET = ../../azimuth3imager
 DEPENDPATH += .
@@ -30,9 +32,9 @@ VERSTR = '\\"$${VERSION}\\"'
 DEFINES += VER=\"$${VERSTR}\"
 DEFINES += WINVER=0x0601
 DEFINES += _WIN32_WINNT=0x0601
-QMAKE_TARGET_PRODUCT = "Win32 Image Writer"
-QMAKE_TARGET_DESCRIPTION = "Image Writer for Windows to write USB and SD images"
-QMAKE_TARGET_COPYRIGHT = "Copyright (C) 2009-2017 Windows ImageWriter Team"
+QMAKE_TARGET_PRODUCT = "Azimuth 3 Image Writer"
+QMAKE_TARGET_DESCRIPTION = "Azimuth 3 Image Writer for Windows to write USB images"
+QMAKE_TARGET_COPYRIGHT = "Copyright (C) 2018 TBDD, LLC"
 
 # Input
 HEADERS += disk.h\
@@ -59,15 +61,5 @@ defineReplace(prependAll) {
  return($$result)
 }
 
-TRANSLATIONS = #$$prependAll(LANGUAGES, $$PWD/lang/diskimager_, .ts)
-
-TRANSLATIONS_FILES =
-
-#qtPrepareTool(LRELEASE, lrelease)
-#for(tsfile, TRANSLATIONS) {
-#    qmfile = $$tsfile
-#    qmfile ~= s,.ts$,.qm,
-#    command = $$LRELEASE $$tsfile -qm $$qmfile
-#    system($$command)|error("Failed to run: $$command")
-#    TRANSLATIONS_FILES += $$qmfile
-#}
+TRANSLATIONS = 
+TRANSLATIONS_FILES = 

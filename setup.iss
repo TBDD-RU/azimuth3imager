@@ -4,7 +4,7 @@
 #define MyAppExeName "azimuth3imager.exe"
 #define MyAppSourceDir AddBackslash(SourcePath) + "build"
 #define MyAppExeFile AddBackslash(MyAppSourceDir) + MyAppExeName
-#define MyAppName "Azimuth 3 Imager"
+#define MyAppName "Azimuth 3 Image Writer"
 #define MyAppVersion GetStringFileInfo(MyAppExeFile,PRODUCT_VERSION)
 #define MyAppPublisher "TBDD"
 #define MyAppURL "http://tbdd.ru"
@@ -39,10 +39,10 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "build\azimuth3imager.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "build\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "build\platforms\*.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion
+; Source: "Release\translations\*.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
 Source: "Changelog.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "GPL-2"; DestDir: "{app}"; Flags: ignoreversion
 Source: "LGPL-2.1"; DestDir: "{app}"; Flags: ignoreversion
-Source: "README.txt"; DestDir: "{app}"; Flags: ignoreversion isreadme
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
