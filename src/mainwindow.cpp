@@ -36,6 +36,12 @@
 #include <iostream>
 #include <sstream>
 
+#include <inttypes.h>
+#include <cmath>
+#include <fstream>
+#include <boost/iostreams/filtering_stream.hpp>
+#include <boost/iostreams/filter/bzip2.hpp>
+
 #include "disk.h"
 #include "mainwindow.h"
 #include "elapsedtimer.h"
@@ -284,6 +290,36 @@ void MainWindow::on_bCancel_clicked() {
 	}
 }
 
+struct SimplifiedTarHeader {
+	char name[100];
+	char __nu[24];
+	char size[12];
+	//char __ne[376]; //unread 376 bytes
+};
+
+uint64_t parseTarNumber(char* number, int size) { // octal, NULL-terminated
+	uint64_t result = 0;
+
+	if (number == 0) {
+		return result;
+	}
+
+	for (char last; size > 0; ) {
+		last = number[size - 1];
+		if (last == 0 || last == 32) {
+			size--;
+		} else {
+			break;
+		}
+	}
+
+	for (int i = 0; i < size; i++) {
+		result = (result << 3) + ((int) number[i] - 48);
+	}
+
+	return result;
+}
+
 void MainWindow::on_bWrite_clicked() {
 	bool passfail = true;
 	if (!leFile->text().isEmpty()) {
@@ -344,25 +380,50 @@ void MainWindow::on_bWrite_clicked() {
 				setReadWriteButtonState();
 				return;
 			}
-			hFile = getHandleOnFile(LPCWSTR(leFile->text().data()),
-					GENERIC_READ);
-			if (hFile == INVALID_HANDLE_VALUE) {
-				removeLockOnVolume(hVolume);
-				CloseHandle(hVolume);
-				status = STATUS_IDLE;
-				hVolume = INVALID_HANDLE_VALUE;
-				bCancel->setEnabled(false);
-				setReadWriteButtonState();
-				return;
+
+			bool a3i = (LPCWSTR(leFile->text().substr((int)leFile->text().size()-4, (int)leFile->text().size()).data()) == L".a3i") ? true : false;
+
+			std::ifstream file(LPCWSTR(leFile->text().data()), std::ifstream::binary);
+			boost::iostreams::filtering_istream in;
+
+			uint64_t size;
+
+			if (!a3i) {
+				hFile = getHandleOnFile(LPCWSTR(leFile->text().data()),
+						GENERIC_READ);
+				if (hFile == INVALID_HANDLE_VALUE) {
+					removeLockOnVolume(hVolume);
+					CloseHandle(hVolume);
+					status = STATUS_IDLE;
+					hVolume = INVALID_HANDLE_VALUE;
+					bCancel->setEnabled(false);
+					setReadWriteButtonState();
+					return;
+				}
+			} else {
+				in.push(boost::iostreams::bzip2_decompressor());
+				in.push(file);
+
+				SimplifiedTarHeader header;
+
+				in.read((char*) &header, sizeof header);
+
+				size = parseTarNumber(header.size, 12);
+
+				in.ignore(376); // unused end of tar header
 			}
 			hRawDisk = getHandleOnDevice(deviceID, GENERIC_WRITE);
 			if (hRawDisk == INVALID_HANDLE_VALUE) {
 				removeLockOnVolume(hVolume);
-				CloseHandle(hFile);
+				if (!a3i) {
+					CloseHandle(hFile);
+					hFile = INVALID_HANDLE_VALUE;
+				} else {
+					file.close();
+				}
 				CloseHandle(hVolume);
 				status = STATUS_IDLE;
 				hVolume = INVALID_HANDLE_VALUE;
-				hFile = INVALID_HANDLE_VALUE;
 				bCancel->setEnabled(false);
 				setReadWriteButtonState();
 				return;
@@ -372,109 +433,134 @@ void MainWindow::on_bWrite_clicked() {
 				//For external card readers you may not get device change notification when you remove the card/flash.
 				//(So no WM_DEVICECHANGE signal). Device stays but size goes to 0. [Is there special event for this on Windows??]
 				removeLockOnVolume(hVolume);
+				if (!a3i) {
+					CloseHandle(hFile);
+					hFile = INVALID_HANDLE_VALUE;
+				} else {
+					file.close();
+				}
 				CloseHandle(hRawDisk);
-				CloseHandle(hFile);
 				CloseHandle(hVolume);
 				hRawDisk = INVALID_HANDLE_VALUE;
-				hFile = INVALID_HANDLE_VALUE;
 				hVolume = INVALID_HANDLE_VALUE;
 				passfail = false;
 				status = STATUS_IDLE;
 				return;
 
 			}
-			numsectors = getFileSizeInSectors(hFile, sectorsize);
-			if (!numsectors) {
-				//For external card readers you may not get device change notification when you remove the card/flash.
-				//(So no WM_DEVICECHANGE signal). Device stays but size goes to 0. [Is there special event for this on Windows??]
-				removeLockOnVolume(hVolume);
-				CloseHandle(hRawDisk);
-				CloseHandle(hFile);
-				CloseHandle(hVolume);
-				hRawDisk = INVALID_HANDLE_VALUE;
-				hFile = INVALID_HANDLE_VALUE;
-				hVolume = INVALID_HANDLE_VALUE;
-				status = STATUS_IDLE;
-				return;
-
-			}
-			if (numsectors > availablesectors) {
-				bool datafound = false;
-				i = availablesectors;
-				unsigned long nextchunksize = 0;
-				while ((i < numsectors) && (datafound == false)) {
-					nextchunksize =
-							((numsectors - i) >= 1024ul) ?
-									1024ul : (numsectors - i);
-					sectorData = readSectorDataFromHandle(hFile, i,
-							nextchunksize, sectorsize);
-					if (sectorData == NULL) {
-						// if there's an error verifying the truncated data, just move on to the
-						//  write, as we don't care about an error in a section that we're not writing...
-						i = numsectors + 1;
-					} else {
-						unsigned int j = 0;
-						unsigned limit = nextchunksize * sectorsize;
-						while ((datafound == false) && (j < limit)) {
-							if (sectorData[j++] != 0) {
-								datafound = true;
-							}
-						}
-						i += nextchunksize;
-					}
-				}
-				// delete the allocated sectorData
-				delete[] sectorData;
-				sectorData = NULL;
-				// build the string for the warning dialog
-				std::ostringstream msg;
-				msg << "More space required than is available:"
-						<< "\n  Required: " << numsectors << " sectors"
-						<< "\n  Available: " << availablesectors << " sectors"
-						<< "\n  Sector Size: " << sectorsize
-						<< "\n\nThe extra space "
-						<< ((datafound) ? "DOES" : "does not")
-						<< " appear to contain data" << "\n\nContinue Anyway?";
-				if (QMessageBox::warning(this,
-						tr("Not enough available space!"),
-						tr(msg.str().c_str()), QMessageBox::Ok,
-						QMessageBox::Cancel) == QMessageBox::Ok) {
-					// truncate the image at the device size...
-					numsectors = availablesectors;
-				} else    // Cancel
-				{
+			if (!a3i) {
+				numsectors = getFileSizeInSectors(hFile, sectorsize);
+				if (!numsectors) {
+					//For external card readers you may not get device change notification when you remove the card/flash.
+					//(So no WM_DEVICECHANGE signal). Device stays but size goes to 0. [Is there special event for this on Windows??]
 					removeLockOnVolume(hVolume);
 					CloseHandle(hRawDisk);
 					CloseHandle(hFile);
 					CloseHandle(hVolume);
-					status = STATUS_IDLE;
-					hVolume = INVALID_HANDLE_VALUE;
-					hFile = INVALID_HANDLE_VALUE;
 					hRawDisk = INVALID_HANDLE_VALUE;
-					bCancel->setEnabled(false);
-					setReadWriteButtonState();
+					hFile = INVALID_HANDLE_VALUE;
+					hVolume = INVALID_HANDLE_VALUE;
+					status = STATUS_IDLE;
 					return;
+
 				}
+				if (numsectors > availablesectors) {
+					bool datafound = false;
+					i = availablesectors;
+					unsigned long nextchunksize = 0;
+					while ((i < numsectors) && (datafound == false)) {
+						nextchunksize =
+								((numsectors - i) >= 1024ul) ?
+										1024ul : (numsectors - i);
+						sectorData = readSectorDataFromHandle(hFile, i,
+								nextchunksize, sectorsize);
+						if (sectorData == NULL) {
+							// if there's an error verifying the truncated data, just move on to the
+							//  write, as we don't care about an error in a section that we're not writing...
+							i = numsectors + 1;
+						} else {
+							unsigned int j = 0;
+							unsigned limit = nextchunksize * sectorsize;
+							while ((datafound == false) && (j < limit)) {
+								if (sectorData[j++] != 0) {
+									datafound = true;
+								}
+							}
+							i += nextchunksize;
+						}
+					}
+					// delete the allocated sectorData
+					delete[] sectorData;
+					sectorData = NULL;
+					// build the string for the warning dialog
+					std::ostringstream msg;
+					msg << "More space required than is available:"
+							<< "\n  Required: " << numsectors << " sectors"
+							<< "\n  Available: " << availablesectors << " sectors"
+							<< "\n  Sector Size: " << sectorsize
+							<< "\n\nThe extra space "
+							<< ((datafound) ? "DOES" : "does not")
+							<< " appear to contain data" << "\n\nContinue Anyway?";
+					if (QMessageBox::warning(this,
+							tr("Not enough available space!"),
+							tr(msg.str().c_str()), QMessageBox::Ok,
+							QMessageBox::Cancel) == QMessageBox::Ok) {
+						// truncate the image at the device size...
+						numsectors = availablesectors;
+					} else    // Cancel
+					{
+						removeLockOnVolume(hVolume);
+						CloseHandle(hRawDisk);
+						CloseHandle(hFile);
+						CloseHandle(hVolume);
+						status = STATUS_IDLE;
+						hVolume = INVALID_HANDLE_VALUE;
+						hFile = INVALID_HANDLE_VALUE;
+						hRawDisk = INVALID_HANDLE_VALUE;
+						bCancel->setEnabled(false);
+						setReadWriteButtonState();
+						return;
+					}
+				}
+			} else {
+				numsectors = ((unsigned long long) size / sectorsize ) + (((unsigned long long) size % sectorsize )? 1 : 0);
 			}
 
 			progressbar->setRange(0,
 					(numsectors == 0ul) ? 100 : (int) numsectors);
 			lasti = 0ul;
+			unsigned long chunksize = 0;
+			unsigned long long blk_size;
 			update_timer.start();
 			elapsed_timer->start();
 			for (i = 0ul; i < numsectors && status == STATUS_WRITING; i +=
 					1024ul) {
-				sectorData = readSectorDataFromHandle(hFile, i,
-						(numsectors - i >= 1024ul) ? 1024ul : (numsectors - i),
-						sectorsize);
+				chunksize = ((numsectors - i) >= 1024ul) ?
+						1024ul : (numsectors - i);
+				if (!a3i) {
+					sectorData = readSectorDataFromHandle(hFile, i,
+							chunksize, sectorsize);
+				} else {
+					blk_size = min((uint64_t) sectorsize * chunksize, size);
+
+					sectorData = new char[blk_size];
+
+					in.read(sectorData, blk_size);
+
+					size -= blk_size;
+				}
 				if (sectorData == NULL) {
 					removeLockOnVolume(hVolume);
+					if (!a3i) {
+						CloseHandle(hFile);
+						hFile = INVALID_HANDLE_VALUE;
+					} else {
+						file.close();
+					}
 					CloseHandle(hRawDisk);
-					CloseHandle(hFile);
 					CloseHandle(hVolume);
 					status = STATUS_IDLE;
 					hRawDisk = INVALID_HANDLE_VALUE;
-					hFile = INVALID_HANDLE_VALUE;
 					hVolume = INVALID_HANDLE_VALUE;
 					bCancel->setEnabled(false);
 					setReadWriteButtonState();
@@ -485,13 +571,17 @@ void MainWindow::on_bWrite_clicked() {
 						sectorsize)) {
 					delete[] sectorData;
 					removeLockOnVolume(hVolume);
+					if (!a3i) {
+						CloseHandle(hFile);
+						hFile = INVALID_HANDLE_VALUE;
+					} else {
+						file.close();
+					}
 					CloseHandle(hRawDisk);
-					CloseHandle(hFile);
 					CloseHandle(hVolume);
 					status = STATUS_IDLE;
 					sectorData = NULL;
 					hRawDisk = INVALID_HANDLE_VALUE;
-					hFile = INVALID_HANDLE_VALUE;
 					hVolume = INVALID_HANDLE_VALUE;
 					bCancel->setEnabled(false);
 					setReadWriteButtonState();
@@ -513,11 +603,15 @@ void MainWindow::on_bWrite_clicked() {
 				QCoreApplication::processEvents();
 			}
 			removeLockOnVolume(hVolume);
+			if (!a3i) {
+				CloseHandle(hFile);
+				hFile = INVALID_HANDLE_VALUE;
+			} else {
+				file.close();
+			}
 			CloseHandle(hRawDisk);
-			CloseHandle(hFile);
 			CloseHandle(hVolume);
 			hRawDisk = INVALID_HANDLE_VALUE;
-			hFile = INVALID_HANDLE_VALUE;
 			hVolume = INVALID_HANDLE_VALUE;
 			if (status == STATUS_CANCELED) {
 				passfail = false;
