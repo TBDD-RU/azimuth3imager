@@ -381,9 +381,9 @@ void MainWindow::on_bWrite_clicked() {
 				return;
 			}
 
-			bool a3i = (LPCWSTR(leFile->text().substr((int)leFile->text().size()-4, (int)leFile->text().size()).data()) == L".a3i") ? true : false;
+			bool a3i = (LPCWSTR(leFile->text().mid((int)leFile->text().size()-4, (int)leFile->text().size()).data()) == L".a3i") ? true : false;
 
-			std::ifstream file(LPCWSTR(leFile->text().data()), std::ifstream::binary);
+			std::ifstream file(LPCSTR(leFile->text().data()), std::ifstream::binary);
 			boost::iostreams::filtering_istream in;
 
 			uint64_t size;
@@ -529,19 +529,19 @@ void MainWindow::on_bWrite_clicked() {
 			progressbar->setRange(0,
 					(numsectors == 0ul) ? 100 : (int) numsectors);
 			lasti = 0ul;
-			unsigned long chunksize = 0;
+			unsigned long nextchunksize = 0;
 			unsigned long long blk_size;
 			update_timer.start();
 			elapsed_timer->start();
 			for (i = 0ul; i < numsectors && status == STATUS_WRITING; i +=
 					1024ul) {
-				chunksize = ((numsectors - i) >= 1024ul) ?
+				nextchunksize = ((numsectors - i) >= 1024ul) ?
 						1024ul : (numsectors - i);
 				if (!a3i) {
 					sectorData = readSectorDataFromHandle(hFile, i,
-							chunksize, sectorsize);
+							nextchunksize, sectorsize);
 				} else {
-					blk_size = min((uint64_t) sectorsize * chunksize, size);
+					blk_size = std::min((uint64_t) sectorsize * nextchunksize, size);
 
 					sectorData = new char[blk_size];
 
