@@ -381,12 +381,12 @@ void MainWindow::on_bWrite_clicked() {
 				return;
 			}
 
-			bool a3i = (LPCWSTR(leFile->text().mid((int)leFile->text().size()-4, (int)leFile->text().size()).data()) == L".a3i") ? true : false;
+			bool a3i = (wcscmp(LPCWSTR(leFile->text().mid((int)leFile->text().size()-4, (int)leFile->text().size()).data()), L".a3i") == 0) ? true : false;
 
 			std::ifstream file(LPCSTR(leFile->text().data()), std::ifstream::binary);
 			boost::iostreams::filtering_istream in;
 
-			uint64_t size;
+			uint64_t size = 0; // preventing warnings
 
 			if (!a3i) {
 				hFile = getHandleOnFile(LPCWSTR(leFile->text().data()),
