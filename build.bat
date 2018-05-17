@@ -1,10 +1,12 @@
 @echo off
 cd src
-qmake.exe
-mingw32-make.exe
+qmake
+mingw32-make
 cd ..
 mkdir build
 move azimuth3imager.exe build
+copy %LIBBOOST_LIBPATH%\%LIBBOOST_IOSTREAMS_BINARY_NAME%.dll build\
+copy %LIBBOOST_LIBPATH%\%LIBBOOST_BZIP2_BINARY_NAME%.dll build\
 cd build
 windeployqt azimuth3imager.exe
 cd ..
