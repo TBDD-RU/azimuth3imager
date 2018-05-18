@@ -1,7 +1,7 @@
 @echo off
 cd src
-qmake.exe
-mingw32-make.exe
+qmake
+mingw32-make
 cd ..
 pause
 @echo on

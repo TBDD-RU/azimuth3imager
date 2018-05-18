@@ -530,7 +530,7 @@ void MainWindow::on_bWrite_clicked() {
 					(numsectors == 0ul) ? 100 : (int) numsectors);
 			lasti = 0ul;
 			unsigned long nextchunksize = 0;
-			unsigned long long blk_size;
+			uint64_t blk_size;
 			update_timer.start();
 			elapsed_timer->start();
 			for (i = 0ul; i < numsectors && status == STATUS_WRITING; i +=
