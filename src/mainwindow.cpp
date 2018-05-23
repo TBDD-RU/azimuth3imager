@@ -529,7 +529,7 @@ void MainWindow::on_bWrite_clicked() {
 			progressbar->setRange(0,
 					(numsectors == 0ul) ? 100 : (int) numsectors);
 			lasti = 0ul;
-			unsigned long nextchunksize = 0;
+			unsigned long long nextchunksize = 0;
 			uint64_t blk_size;
 			update_timer.start();
 			elapsed_timer->start();
@@ -541,9 +541,9 @@ void MainWindow::on_bWrite_clicked() {
 					sectorData = readSectorDataFromHandle(hFile, i,
 							nextchunksize, sectorsize);
 				} else {
-					blk_size = std::min((uint64_t) sectorsize * nextchunksize, size);
+					blk_size = std::min((uint64_t) (sectorsize * nextchunksize), size);
 
-					sectorData = new char[blk_size];
+					sectorData = new char[sectorsize * nextchunksize];
 
 					in.read(sectorData, blk_size);
 
@@ -567,7 +567,7 @@ void MainWindow::on_bWrite_clicked() {
 					return;
 				}
 				if (!writeSectorDataToHandle(hRawDisk, sectorData, i,
-						(numsectors - i >= 1024ul) ? 1024ul : (numsectors - i),
+						nextchunksize,
 						sectorsize)) {
 					delete[] sectorData;
 					removeLockOnVolume(hVolume);
