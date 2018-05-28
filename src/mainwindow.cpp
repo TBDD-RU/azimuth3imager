@@ -38,7 +38,8 @@
 
 #include <inttypes.h>
 #include <cmath>
-#include <fstream>
+#include <boost/system/windows_error.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/filter/bzip2.hpp>
 
@@ -383,7 +384,7 @@ void MainWindow::on_bWrite_clicked() {
 
 			bool a3i = (wcscmp(LPCWSTR(leFile->text().mid((int)leFile->text().size()-4, (int)leFile->text().size()).data()), L".a3i") == 0) ? true : false;
 
-			std::ifstream file(LPCSTR(leFile->text().data()), std::ifstream::binary);
+			boost::filesystem::ifstream file(LPCWSTR(leFile->text().data()), std::ifstream::binary);
 			boost::iostreams::filtering_istream in;
 
 			uint64_t size = 0; // preventing warnings
@@ -523,7 +524,7 @@ void MainWindow::on_bWrite_clicked() {
 					}
 				}
 			} else {
-				numsectors = ((unsigned long long) size / sectorsize ) + (((unsigned long long) size % sectorsize )? 1 : 0);
+				numsectors = ((unsigned long long) size / sectorsize ) + (((unsigned long long) size % sectorsize ) ? 1 : 0);
 			}
 
 			progressbar->setRange(0,

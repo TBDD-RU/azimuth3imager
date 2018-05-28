@@ -39,6 +39,8 @@ b2 toolset=gcc link=shared ^
 
   * `LIBBOOST_INCLUDE` — boost include dir.
   * `LIBBOOST_LIBPATH` — boost lib dir.
+  * `LIBBOOST_SYSTEM_BINARY_NAME` — system DLL file name (without extension).
+  * `LIBBOOST_FILESYSTEM_BINARY_NAME` — filesystem DLL file name (without extension).
   * `LIBBOOST_IOSTREAMS_BINARY_NAME` — iostreams DLL file name (without extension).
   * `LIBBOOST_BZIP2_BINARY_NAME` — bzip2 DLL file name (without extension).
 
